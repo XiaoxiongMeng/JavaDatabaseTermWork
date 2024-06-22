@@ -15,7 +15,7 @@ CREATE TABLE `bills` (
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 ```
 触发器:
-```
+```sql
 create definer = root@localhost trigger after_bill_insert
     after insert
     on bills
@@ -39,7 +39,7 @@ CREATE TABLE `posts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 ```
 触发器：
-```
+```sql
 //1
 create definer = root@localhost trigger after_post_insert
     after insert
@@ -76,7 +76,7 @@ CREATE TABLE `user_table` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 ```
 触发器：
-```
+```sql
 create definer = root@localhost trigger after_user_insert
     after insert
     on user_table
@@ -101,7 +101,7 @@ CREATE TABLE `userinfo` (
 ```
 
 存储过程：
-```
+```sql
 // 1
 create
     definer = root@localhost procedure GetBillCount(IN p_uid int)
