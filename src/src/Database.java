@@ -184,7 +184,7 @@ public class Database {
 
             int a = stmt.executeUpdate(sql);
             if(a == 1){
-                return 1;
+                return id;
             }else{
                 return 0;
             }
