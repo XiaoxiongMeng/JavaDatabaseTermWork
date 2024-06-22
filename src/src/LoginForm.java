@@ -8,7 +8,7 @@ import java.sql.Statement;
 
 import src.Database.*;
 
-import static src.UserCenter.userCenter;
+import static src.UserCenter.MainFrame;
 
 /**
  * @author 32808
@@ -60,7 +60,8 @@ public class LoginForm extends JFrame {
 
                 if (Database.checkPassword(username,password,stmt,conn)) {
                     // 登陆成功
-                    userCenter(username, stmt,conn);
+                    MainFrame mainFrame = new MainFrame(username, stmt,conn);
+                    mainFrame.setVisible(true);
                     LoginForm.this.dispose();
                 } else {
                     JOptionPane.showMessageDialog(null, "密码错误！");

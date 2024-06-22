@@ -2,8 +2,11 @@ package src;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.Statement;
+
 
 /**
  * @author 32808
@@ -45,9 +48,26 @@ public class RegisterForm extends JFrame {
         registerButton = new JButton("注册");
         registerButton.setFont(font);
 
-        // 这里可以添加注册按钮的点击事件，用于处理注册逻辑
-        // （在这个例子中，我们只是简单地关闭窗口）
-        registerButton.addActionListener(e -> dispose());
+
+        registerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String username = usernameField.getText();
+                String password = new String(passwordField.getPassword());
+                String password2 = new String(confirmPasswordField.getPassword());
+                int uid = -1;
+
+                if (password2.equals(password)) {
+                    // 注册
+                    uid = Database.createUser(username,password,stmt,conn);
+                    JOptionPane.showMessageDialog(null, "注册成功！您的UID是"+uid+"。请牢记，登陆时使用uid");
+                    RegisterForm.this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(null, "密码不一致！请仔细检查");
+                }
+
+            }
+        });
 
         // 布局组件
         JPanel panel = new JPanel();
