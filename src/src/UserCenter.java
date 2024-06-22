@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.Statement;
 import src.Database.User;
+import src.Database.Post;
 
 public class UserCenter {
 
@@ -27,6 +28,9 @@ public class UserCenter {
 
             int postAmount = user.post;
 
+            Post[] post = new Post[postAmount];
+            post = db.fetchPost(uid,stmt,conn);
+
             // 顶部面板
             JPanel topPanel = new JPanel();
             topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -35,6 +39,14 @@ public class UserCenter {
             JLabel levelLabel = new JLabel("贴子数："+postAmount);
             JLabel balanceLabel = new JLabel("余额: "+user.balance);
             JLabel signatureLabel = new JLabel("个性签名: "+user.shows);
+            Font font = new Font("微软雅黑", Font.PLAIN, 16);
+
+            userLabel.setFont(font);
+            uidLabel.setFont(font);
+            levelLabel.setFont(font);
+            balanceLabel.setFont(font);
+            signatureLabel.setFont(font);
+
             topPanel.add(userLabel);
             topPanel.add(uidLabel);
             topPanel.add(levelLabel);
@@ -50,12 +62,20 @@ public class UserCenter {
             // 帖子列表
             listModel = new DefaultListModel<>();
             for (int i = 0; i < postAmount; i++) {
-                listModel.addElement("Post " + (i + 1));
+                listModel.addElement("Post " + (i + 1)+"\t标题：\t"+post[i].title);
             }
             postList = new JList<>(listModel);
+            postList.setFont(font);
             postList.addMouseListener(new MouseAdapter() {
-                public void mouseDoubleClicked(MouseEvent e) {
-                    System.out.println("双击了帖子: " + postList.getSelectedValue());
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 2) { // 检查是否是双击
+                        int index = postList.locationToIndex(e.getPoint()); // 获取被点击的项的索引
+                        if (index >= 0) { // 确保索引有效
+                            String selectedValue = postList.getModel().getElementAt(index);
+                            System.out.println("Double-clicked on: " + selectedValue);
+                        }
+                    }
                 }
             });
             JScrollPane scrollPane = new JScrollPane(postList);
@@ -69,10 +89,13 @@ public class UserCenter {
                 System.out.println("点击了账单按钮");
             });
 
+            Panel allTop = new Panel();
+            allTop.add(topPanel,BorderLayout.NORTH);
+            allTop.add(topSeparator,BorderLayout.CENTER);
+            allTop.add(signaturePanel,BorderLayout.SOUTH);
+
             // 组装布局
-            add(topPanel, BorderLayout.NORTH);
-            add(topSeparator, BorderLayout.NORTH);
-            add(signaturePanel, BorderLayout.NORTH);
+            add(allTop,BorderLayout.NORTH);
             add(scrollPane, BorderLayout.CENTER);
             add(billButton, BorderLayout.SOUTH);
 

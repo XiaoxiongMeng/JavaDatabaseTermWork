@@ -365,7 +365,35 @@ public class Database {
         }
         return user;
     }
-
-
     //  用于获取用户信息
+
+
+    public static void updatePost(int tid, String title, String content, Statement stmt, Connection conn){
+
+        try {
+
+            String sql = "UPDATE posts SET title = '"+title+"',content = '"+content+"' WHERE tid = '"+tid+"'";
+            stmt.executeUpdate(sql);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+    //  修改Post
+
+
+    public static void updateBill(int bid, String title, String content, Statement stmt, Connection conn){
+
+        try {
+
+            String sql = "UPDATE bills SET title = '"+title+"',content = '"+content+"' WHERE bid = '"+bid+"'";
+            stmt.executeUpdate(sql);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+    //  修改bill
 }
