@@ -1,15 +1,16 @@
 package src;
 
+import src.Database.Bill;
+import src.Database.User;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.Statement;
-import src.Database.User;
-import src.Database.Post;
 
-public class UserCenter {
+public class BillCenter {
 
     public static class MainFrame extends JFrame {
 
@@ -18,25 +19,26 @@ public class UserCenter {
 
 
         public MainFrame(int uid, Statement stmt, Connection conn) {
-            setTitle("用户中心");
+            setTitle("账单中心");
             setSize(800, 600);
-            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             setLayout(new BorderLayout());
 
             Database db = new Database();
 
             User user = db.getUserInfo(uid,stmt,conn);
 
-            int postAmount = user.post;
+            int billAmount = Database.getBillAmount(uid,stmt,conn);
 
-            final Post[][] post = {db.fetchPost(uid, stmt, conn)};
+            Bill[] bill = new Bill[billAmount];
+            bill = db.fetchBill(uid,stmt,conn);
 
             // 顶部面板
             JPanel topPanel = new JPanel();
             topPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
             JLabel userLabel = new JLabel("用户名:"+user.username);
             JLabel uidLabel = new JLabel("UID:"+user.uid);
-            JLabel levelLabel = new JLabel("贴子数："+postAmount);
+            JLabel levelLabel = new JLabel("贴子数："+billAmount);
             JLabel balanceLabel = new JLabel("余额: "+user.balance);
             JLabel signatureLabel = new JLabel("个性签名: "+user.shows);
             Font font = new Font("微软雅黑", Font.PLAIN, 16);
@@ -59,32 +61,28 @@ public class UserCenter {
 
             // 帖子列表
             listModel = new DefaultListModel<>();
-            for (int i = 0; i < postAmount; i++) {
-                listModel.addElement("Post " + (i + 1)+"\t标题：\t"+ post[0][i].title);
+            for (int i = 0; i < billAmount; i++) {
+                listModel.addElement("Bill " + (i + 1)+"\t标题：\t"+bill[i].title);
             }
             postList = new JList<>(listModel);
             postList.setFont(font);
-            final Post[][] finalPost = {post[0]};
+            final Bill[][] finalPost = {bill};
             postList.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     if (e.getClickCount() == 2) { // 检查是否是双击
                         int index = postList.locationToIndex(e.getPoint()); // 获取被点击的项的索引
-                        Posts po = new Posts(2, finalPost[0][index].tid, finalPost[0][index].title, finalPost[0][index].content, stmt, conn);
+                        Bills po = new Bills(2, finalPost[0][index].bid, finalPost[0][index].title, finalPost[0][index].content, finalPost[0][index].amount, stmt, conn);
                         po.setVisible(true);
                     }
                 }
             });
             JScrollPane scrollPane = new JScrollPane(postList);
-            scrollPane.setAutoscrolls(true);
-            getContentPane().add(scrollPane);
 
             // 添加到底部面板的按钮
-            JButton billButton = new JButton("账单");
-            billButton.setFont(font);
-            JButton postButton = new JButton("新建Post");
+            JButton postButton = new JButton("新建Bill");
             postButton.setFont(font);
-            JButton changeButton = new JButton("删除Post");
+            JButton changeButton = new JButton("修改签名");
             changeButton.setFont(font);
             JButton fresh = new JButton("刷新");
             fresh.setFont(font);
@@ -92,33 +90,29 @@ public class UserCenter {
             JPanel panel = new JPanel();
             panel.setLayout(new GridLayout(1, 4, 10, 10));
 
-            panel.add(billButton);
             panel.add(postButton);
             panel.add(changeButton);
             panel.add(fresh);
 
-            billButton.addActionListener(e -> {
-                BillCenter.MainFrame mf = new BillCenter.MainFrame(uid, stmt,conn);
-                mf.setVisible(true);
-            });
 
             postButton.addActionListener(e -> {
-                new Posts(1, uid, "", "", stmt, conn);
+                new Bills(1, uid, "", "", 0, stmt, conn);
             });
 
             changeButton.addActionListener(e -> {
-                int index = postList.getSelectedIndex();
-                Database.deletePost(finalPost[0][index].tid, stmt, conn);
+                // 这里应该创建并显示BillFrame
+                // BillFrame billFrame = new BillFrame();
+                // billFrame.setVisible(true);
             });
 
             fresh.addActionListener(e -> {
-                User user1 = db.getUserInfo(uid,stmt,conn);
-                Post[] post1 = db.fetchPost(uid,stmt,conn);
+                int amount1 = Database.getBillAmount(uid, stmt, conn);
+                Bill[] bill1 = db.fetchBill(uid,stmt,conn);
                 listModel.clear();
-                for (int i = 0; i < user1.post; i++) {
-                    listModel.addElement("Post " + (i + 1)+"\t标题：\t"+post1[i].title);
+                for (int i = 0; i < amount1; i++) {
+                    listModel.addElement("Bill " + (i + 1)+"\t标题：\t"+bill1[i].title);
                 }
-                finalPost[0] = post1;
+                finalPost[0] = bill1;
             });
 
             Panel allTop = new Panel();

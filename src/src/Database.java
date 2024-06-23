@@ -303,7 +303,7 @@ public class Database {
         Bill[] bill = new Bill[amount];
         try {
 
-            String sql = "SELECT * FROM posts WHERE uid = "+uid+";";
+            String sql = "SELECT * FROM bills WHERE uid = "+uid+";";
 
             ResultSet rs = stmt.executeQuery(sql);
             int i = 0;
